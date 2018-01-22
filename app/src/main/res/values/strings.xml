@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">TaskPostApp</string>
+    <string name="save_logcat">Save LogCat</string>
+    <string name="email_label">Email:</string>
+    <string name="site_label">Site:</string>
+    <string name="phone_label">Phone :</string>
+    <string name="city_label">City:</string>
+    <string name="save_user">Save User</string>
+</resources>
