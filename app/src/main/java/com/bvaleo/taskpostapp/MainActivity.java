@@ -53,7 +53,7 @@ public class MainActivity extends AppCompatActivity {
     public RadioGroup rgIndicators;
 
     private GridLayoutManager mLayoutManager;
-    private PostsAdapter mAdapetr;
+    private PostsAdapter mAdapter;
     private IPostService mService;
     private int childOfRadioGroup;
 
@@ -65,7 +65,8 @@ public class MainActivity extends AppCompatActivity {
         ButterKnife.bind(this);
 
         Picasso.with(this)
-                .load("http://media.kino-govno.com/movies/i/inception/posters/inception_24s.jpg")
+                .load(Constants.IMAGE_URL)
+                .error(R.drawable.error_case)
                 .into(imageView);
 
         imageView.setAnimation(getImageAnimation());
@@ -78,11 +79,11 @@ public class MainActivity extends AppCompatActivity {
 
         childOfRadioGroup = rgIndicators.getChildCount();
         mService = NetworkUtil.getPostService();
-        mAdapetr = new PostsAdapter(new ArrayList<Post>(0));
+        mAdapter = new PostsAdapter(new ArrayList<Post>(0));
         mLayoutManager = new GridLayoutManager(this, 2, GridLayoutManager.HORIZONTAL, false);
 
         recyclerView.setLayoutManager(mLayoutManager);
-        recyclerView.setAdapter(mAdapetr);
+        recyclerView.setAdapter(mAdapter);
         recyclerView.addOnItemTouchListener(getClickListener());
         recyclerView.addOnScrollListener(getScrollListener());
 
@@ -94,12 +95,16 @@ public class MainActivity extends AppCompatActivity {
         mService.getPosts().enqueue(new Callback<List<Post>>() {
             @Override
             public void onResponse(Call<List<Post>> call, Response<List<Post>> response) {
-                mAdapetr.updateData(response.body());
+                if (response.isSuccessful()){
+                    mAdapter.updateData(response.body());
+                } else {
+                    Log.e(Constants.MAIN_ACTIVITY, Constants.RESPONSE_ERROR);
+                }
             }
 
             @Override
             public void onFailure(Call<List<Post>> call, Throwable t) {
-
+                Log.e(Constants.MAIN_ACTIVITY, Constants.RETROFIT_ERROR, t);
             }
         });
     }
@@ -107,8 +112,8 @@ public class MainActivity extends AppCompatActivity {
     private void saveLogCatToFile() {
         if (isStoragePermissionGranted()) {
 
-            File appDirectory = new File(Environment.getExternalStorageDirectory() + "/TaskPostApp");
-            File logDirectory = new File(appDirectory + "/log");
+            File appDirectory = new File(Environment.getExternalStorageDirectory() + Constants.APP_DIRECTORY);
+            File logDirectory = new File(appDirectory + Constants.APP_LOG);
             File logFile = new File(logDirectory, "logcat" + System.currentTimeMillis() + ".log");
 
             if (!appDirectory.exists()) {
@@ -119,14 +124,15 @@ public class MainActivity extends AppCompatActivity {
                 logDirectory.mkdir();
             }
             try {
-                Runtime.getRuntime().exec("logcat -c");
                 Runtime.getRuntime().exec("logcat -f " + logFile);
+                Log.d(Constants.MAIN_ACTIVITY, Constants.SAVE_LOGCAT);
+
             } catch (IOException e) {
                 e.printStackTrace();
             }
 
         } else {
-            Toast.makeText(this, "Дайте разрешения на запись", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, Constants.WRITE_EXTERNAL_STORAGE, Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -171,7 +177,8 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view, int position) {
                 Intent intent = new Intent(MainActivity.this, UserActivity.class);
-                intent.putExtra("data", mAdapetr.getPost(position));
+                intent.putExtra(Constants.PARCELABLE_DATA, mAdapter.getPost(position));
+                Log.d(Constants.MAIN_ACTIVITY, "Start UserActivity for Post #" + Integer.toString(position + 1));
                 startActivity(intent);
             }
 
@@ -194,7 +201,7 @@ public class MainActivity extends AppCompatActivity {
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
 
-                int itemCount = mAdapetr.getItemCount();
+                int itemCount = mAdapter.getItemCount();
                 int elementPerDot = itemCount / childOfRadioGroup + 1;
                 int lastVisibleElement = mLayoutManager.findLastVisibleItemPosition();
                 int currentActiveDot = lastVisibleElement / elementPerDot;

@@ -16,7 +16,8 @@
         android:layout_marginStart="25dp"
         android:layout_marginTop="36dp"
         android:textSize="32sp"
-        android:textStyle="bold" />
+        android:textStyle="bold"
+        android:text="@string/null_string"/>
 
     <TextView
         android:id="@+id/tw_user"
@@ -26,7 +27,8 @@
         android:layout_alignParentRight="true"
         android:layout_alignTop="@+id/tw_id_post"
         android:layout_marginEnd="124dp"
-        android:layout_marginRight="124dp"/>
+        android:layout_marginRight="124dp"
+        android:text="@string/null_string"/>
 
     <TextView
         android:id="@+id/tw_username"
@@ -35,7 +37,8 @@
         android:layout_alignBottom="@+id/tw_id_post"
         android:layout_alignLeft="@+id/tw_user"
         android:layout_alignStart="@+id/tw_user"
-        android:textStyle="italic" />
+        android:textStyle="italic"
+        android:text="@string/null_string"/>
 
     <TextView
         android:id="@+id/tw_email_label"
@@ -93,7 +96,7 @@
         android:layout_alignBottom="@+id/tw_email_label"
         android:layout_centerHorizontal="true"
         android:gravity="start"
-        android:text="TextView" />
+        android:text="@string/null_string" />
 
     <TextView
         android:id="@+id/tw_site"
@@ -104,7 +107,7 @@
         android:layout_alignLeft="@+id/tw_email"
         android:layout_alignStart="@+id/tw_email"
         android:gravity="start"
-        android:text="TextView" />
+        android:text="@string/null_string"/>
 
     <TextView
         android:id="@+id/tw_phone"
@@ -115,7 +118,7 @@
         android:layout_alignLeft="@+id/tw_site"
         android:layout_alignStart="@+id/tw_site"
         android:gravity="start"
-        android:text="TextView" />
+        android:text="@string/null_string" />
 
     <TextView
         android:id="@+id/tw_city"
@@ -126,7 +129,7 @@
         android:layout_alignLeft="@+id/tw_phone"
         android:layout_alignStart="@+id/tw_phone"
         android:gravity="start"
-        android:text="TextView" />
+        android:text="@string/null_string" />
 
     <Button
         android:id="@+id/btn_save_user"

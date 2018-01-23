@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bvaleo.taskpostapp.R;
 import com.bvaleo.taskpostapp.model.Geo;
@@ -56,8 +57,7 @@ public class UserActivity extends AppCompatActivity {
 
         ButterKnife.bind(this);
 
-        mPost = getIntent().getParcelableExtra("data");
-
+        mPost = getIntent().getParcelableExtra(Constants.PARCELABLE_DATA);
         mService = NetworkUtil.getPostService();
         mService.getUserById(mPost.getUserId()).enqueue(new Callback<User>() {
             @Override
@@ -65,12 +65,16 @@ public class UserActivity extends AppCompatActivity {
                 if(response.isSuccessful()){
                     mUser = response.body();
                     inflateView();
+                } else {
+                    Toast.makeText(UserActivity.this, Constants.RESPONSE_ERROR, Toast.LENGTH_SHORT).show();
+                    Log.e(Constants.USER_ACTIVITY, Constants.RESPONSE_ERROR);
                 }
             }
 
             @Override
             public void onFailure(Call<User> call, Throwable t) {
-
+                Log.e(Constants.NETWORK_ERROR, Constants.RETROFIT_ERROR, t);
+                finish();
             }
         });
 
@@ -135,7 +139,7 @@ public class UserActivity extends AppCompatActivity {
         intent.putExtra(Intent.EXTRA_EMAIL, new String[]{mTwEmail.getText().toString()});
         intent.putExtra(android.content.Intent.EXTRA_SUBJECT,"");
         intent.putExtra(android.content.Intent.EXTRA_TEXT,"");
-        startActivity(Intent.createChooser(intent, "Send email..."));
+        startActivity(Intent.createChooser(intent, getString(R.string.send_mail)));
     }
     private void startSiteIntent(){
         String site = mTwSite.getText().toString();
@@ -147,7 +151,7 @@ public class UserActivity extends AppCompatActivity {
     private void startMapIntent(){
         Geo geo = mUser.getAddress().getGeo();
         Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("geo:" + geo.getLat() + ',' + geo.getLng()));
-        startActivity(Intent.createChooser(intent, "Open map...."));
+        startActivity(Intent.createChooser(intent, getString(R.string.open_map)));
     }
     private void startPhoneIntent(){
         Intent intent = new Intent(Intent.ACTION_DIAL, Uri.parse("tel:" + mTwPhone.getText().toString()));
@@ -163,16 +167,16 @@ public class UserActivity extends AppCompatActivity {
                 public void execute(Realm realm) {
                     if (realm.where(User.class).equalTo("id", mUser.getId()).findFirst() == null) {
                         realm.copyToRealm(mUser);
-                        Log.d("RealmLog", "User have added");
+                        Log.d(Constants.LOG_REALM, "User have added");
                     } else {
-                        Log.d("RealmLog", "User already exist");
+                        Log.d(Constants.LOG_REALM, "User already exist");
                     }
 
                 }
             });
 
         } catch (RealmError error){
-            Log.e("ErrorRealm", error.getMessage());
+            Log.e(Constants.REALM_ERROR, error.getMessage());
         } finally {
             realm.close();
         }

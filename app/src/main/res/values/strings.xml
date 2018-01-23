@@ -6,4 +6,7 @@
     <string name="phone_label">Phone :</string>
     <string name="city_label">City:</string>
     <string name="save_user">Save User</string>
+    <string name="open_map">Open map....</string>
+    <string name="send_mail">Send email...</string>
+    <string name="null_string">null</string>
 </resources>
